@@ -43,3 +43,13 @@ export interface CaptchaInfo {
   /** 验证码图片Base64 */
   captchaBase64: string;
 }
+
+/**
+ * CAS 登录请求参数
+ */
+export interface CasLoginRequest {
+  /** CAS 颁发的临时票据，30秒有效 */
+  ticket: string;
+  /** 回调地址，必须与跳转CAS时的service完全一致 */
+  service: string;
+}

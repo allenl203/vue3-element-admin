@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-import type { LoginRequest, LoginResponse, CaptchaInfo } from "@/types/api/auth";
+import type { LoginRequest, LoginResponse, CaptchaInfo, CasLoginRequest } from "@/types/api/auth";
 
 const AUTH_BASE_URL = "/api/v1/auth";
 
@@ -59,6 +59,15 @@ const AuthAPI = {
     return request<any, CaptchaInfo>({
       url: `${AUTH_BASE_URL}/captcha`,
       method: "get",
+    });
+  },
+
+  /** CAS 单点登录接口 */
+  casLogin(data: CasLoginRequest) {
+    return request<any, LoginResponse>({
+      url: `${AUTH_BASE_URL}/cas-login`,
+      method: "post",
+      data,
     });
   },
 };
