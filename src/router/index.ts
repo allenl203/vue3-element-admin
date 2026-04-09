@@ -24,6 +24,12 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
 
   {
+    path: "/cas-callback",
+    component: () => import("@/views/login/cas-callback.vue"),
+    meta: { hidden: true },
+  },
+
+  {
     path: "/",
     name: "/",
     component: Layout,
