@@ -1,5 +1,38 @@
 import { defineMock } from "./base";
 
+/**
+ * 生成 mock JWT token，iat 为当前时间，避免 token 过期导致刷新死循环
+ */
+function createMockToken() {
+  const now = Math.floor(Date.now() / 1000);
+  const payload = {
+    sub: "admin",
+    deptId: 1,
+    dataScope: 1,
+    userId: 2,
+    iat: now,
+    authorities: ["ROLE_ADMIN"],
+    jti: "mock-" + now,
+  };
+  const header = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9";
+  const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  return `${header}.${body}.mock-signature`;
+}
+
+function mockLoginResponse() {
+  const token = createMockToken();
+  return {
+    code: "00000",
+    data: {
+      accessToken: token,
+      tokenType: "Bearer",
+      refreshToken: token,
+      expiresIn: 7200,
+    },
+    msg: "一切ok",
+  };
+}
+
 export default defineMock([
   {
     url: "auth/captcha",
@@ -18,35 +51,13 @@ export default defineMock([
   {
     url: "auth/login",
     method: ["POST"],
-    body: {
-      code: "00000",
-      data: {
-        accessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImRlcHRJZCI6MSwiZGF0YVNjb3BlIjoxLCJ1c2VySWQiOjIsImlhdCI6MTcyODE5MzA1MiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiJdLCJqdGkiOiJhZDg3NzlhZDZlYWY0OWY3OTE4M2ZmYmI5OWM4MjExMSJ9.58YHwL3sNNC22jyAmOZeSm-7MITzfHb_epBIz7LvWeA",
-        tokenType: "Bearer",
-        refreshToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImRlcHRJZCI6MSwiZGF0YVNjb3BlIjoxLCJ1c2VySWQiOjIsImlhdCI6MTcyODE5MzA1MiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiJdLCJqdGkiOiJhZDg3NzlhZDZlYWY0OWY3OTE4M2ZmYmI5OWM4MjExMSJ9.58YHwL3sNNC22jyAmOZeSm-7MITzfHb_epBIz7LvWeA",
-        expiresIn: 7200,
-      },
-      msg: "一切ok",
-    },
+    body: mockLoginResponse,
   },
 
   {
     url: "auth/refresh-token",
     method: ["POST"],
-    body: {
-      code: "00000",
-      data: {
-        accessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImRlcHRJZCI6MSwiZGF0YVNjb3BlIjoxLCJ1c2VySWQiOjIsImlhdCI6MTcyODE5MzA1MiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiJdLCJqdGkiOiJhZDg3NzlhZDZlYWY0OWY3OTE4M2ZmYmI5OWM4MjExMSJ9.58YHwL3sNNC22jyAmOZeSm-7MITzfHb_epBIz7LvWeA",
-        tokenType: "Bearer",
-        refreshToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImRlcHRJZCI6MSwiZGF0YVNjb3BlIjoxLCJ1c2VySWQiOjIsImlhdCI6MTcyODE5MzA1MiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiJdLCJqdGkiOiJhZDg3NzlhZDZlYWY0OWY3OTE4M2ZmYmI5OWM4MjExMSJ9.58YHwL3sNNC22jyAmOZeSm-7MITzfHb_epBIz7LvWeA",
-        expiresIn: 7200,
-      },
-      msg: "一切ok",
-    },
+    body: mockLoginResponse,
   },
 
   {
@@ -62,17 +73,6 @@ export default defineMock([
   {
     url: "auth/cas-login",
     method: ["POST"],
-    body: {
-      code: "00000",
-      data: {
-        accessToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImRlcHRJZCI6MSwiZGF0YVNjb3BlIjoxLCJ1c2VySWQiOjIsImlhdCI6MTcyODE5MzA1MiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiJdLCJqdGkiOiJhZDg3NzlhZDZlYWY0OWY3OTE4M2ZmYmI5OWM4MjExMSJ9.58YHwL3sNNC22jyAmOZeSm-7MITzfHb_epBIz7LvWeA",
-        tokenType: "Bearer",
-        refreshToken:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImRlcHRJZCI6MSwiZGF0YVNjb3BlIjoxLCJ1c2VySWQiOjIsImlhdCI6MTcyODE5MzA1MiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiJdLCJqdGkiOiJhZDg3NzlhZDZlYWY0OWY3OTE4M2ZmYmI5OWM4MjExMSJ9.58YHwL3sNNC22jyAmOZeSm-7MITzfHb_epBIz7LvWeA",
-        expiresIn: 7200,
-      },
-      msg: "一切ok",
-    },
+    body: mockLoginResponse,
   },
 ]);
