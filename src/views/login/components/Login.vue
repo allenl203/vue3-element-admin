@@ -250,12 +250,13 @@ function toOtherForm(type: "register" | "resetPwd") {
  */
 function handleCasLogin() {
   const casServerUrl = import.meta.env.VITE_CAS_SERVER_URL;
-  const serviceUrl = `${window.location.origin}${window.location.pathname}#/cas-callback`;
+  // redirect 参数放在 hash 片段中（CAS 回调时在 # 前追加 ?ticket=xxx，不会与 hash 中的参数冲突）
   const redirect = route.query.redirect as string | undefined;
-  const callbackUrl = redirect
-    ? `${serviceUrl}?redirect=${encodeURIComponent(redirect)}`
-    : serviceUrl;
-  window.location.href = `${casServerUrl}/login?service=${encodeURIComponent(callbackUrl)}`;
+  const hash = redirect
+    ? `#/cas-callback?redirect=${encodeURIComponent(redirect)}`
+    : "#/cas-callback";
+  const serviceUrl = `${window.location.origin}${window.location.pathname}${hash}`;
+  window.location.href = `${casServerUrl}/login?service=${encodeURIComponent(serviceUrl)}`;
 }
 </script>
 
