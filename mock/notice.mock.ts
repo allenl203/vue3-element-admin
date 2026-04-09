@@ -209,6 +209,19 @@ export default defineMock([
     },
   },
 
+  // 全部已读
+  {
+    url: "notices/read-all",
+    method: ["PUT"],
+    body() {
+      return {
+        code: "00000",
+        data: null,
+        msg: "全部已读成功",
+      };
+    },
+  },
+
   // 我的通知分页列表
   {
     url: "notices/my",
