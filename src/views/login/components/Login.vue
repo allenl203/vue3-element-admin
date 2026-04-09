@@ -91,6 +91,16 @@
       </el-link>
     </div>
 
+    <!-- CAS 单点登录 -->
+    <div class="cas-login">
+      <div class="divider-container">
+        <div class="divider-line"></div>
+        <span class="divider-text">其他登录方式</span>
+        <div class="divider-line"></div>
+      </div>
+      <el-button size="large" class="w-full" @click="handleCasLogin">小米CAS登录</el-button>
+    </div>
+
     <!-- 第三方登录 -->
     <div class="third-party-login">
       <div class="divider-container">
@@ -231,6 +241,22 @@ const emit = defineEmits(["update:modelValue"]);
 function toOtherForm(type: "register" | "resetPwd") {
   emit("update:modelValue", type);
 }
+
+/**
+ * CAS 单点登录
+ *
+ * 拼接 CAS 授权 URL 并跳转到 CAS 认证页面
+ * service 参数为前端回调地址，CAS 认证成功后会携带 ticket 回调到该地址
+ */
+function handleCasLogin() {
+  const casServerUrl = import.meta.env.VITE_CAS_SERVER_URL;
+  const serviceUrl = `${window.location.origin}${window.location.pathname}#/cas-callback`;
+  const redirect = route.query.redirect as string | undefined;
+  const callbackUrl = redirect
+    ? `${serviceUrl}?redirect=${encodeURIComponent(redirect)}`
+    : serviceUrl;
+  window.location.href = `${casServerUrl}/login?service=${encodeURIComponent(callbackUrl)}`;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -287,6 +313,27 @@ function toOtherForm(type: "register" | "resetPwd") {
       &:hover {
         background-color: var(--el-fill-color);
       }
+    }
+  }
+}
+
+.cas-login {
+  .divider-container {
+    display: flex;
+    align-items: center;
+    margin: 16px 0;
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--el-border-color-light), transparent);
+    }
+
+    .divider-text {
+      padding: 0 16px;
+      font-size: 12px;
+      color: var(--el-text-color-regular);
+      white-space: nowrap;
     }
   }
 }
