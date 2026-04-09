@@ -66,9 +66,6 @@ async function handleCasCallback() {
     // CAS 登录默认不使用 rememberMe，token 存入 sessionStorage
     AuthStorage.setTokens(accessToken, refreshToken, false);
 
-    // 清理地址栏中的 ticket 参数（CAS 回调后 ticket 留在 URL 中不安全）
-    history.replaceState(null, "", window.location.pathname + window.location.hash);
-
     // 跳转到目标页面（redirect 在 hash 片段的 query 中，如 #/cas-callback?redirect=xxx）
     const redirect = route.query.redirect as string | undefined;
     await router.replace(redirect ? decodeURIComponent(redirect) : "/");
