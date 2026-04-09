@@ -38,15 +38,19 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       host: "0.0.0.0",
       port: +env.VITE_APP_PORT,
       open: true,
-      proxy: {
-        // 代理 /dev-api 的请求
-        [env.VITE_APP_BASE_API]: {
-          changeOrigin: true,
-          // 代理目标地址：https://api.youlai.tech
-          target: env.VITE_APP_API_URL,
-          rewrite: (path: string) => path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""),
-        },
-      },
+      // Mock 模式下禁用 proxy，所有请求由 mock-dev-server 处理；
+      // 非 Mock 模式下代理到 VITE_APP_API_URL 后端
+      proxy:
+        env.VITE_MOCK_DEV_SERVER === "true"
+          ? undefined
+          : {
+              [env.VITE_APP_BASE_API]: {
+                changeOrigin: true,
+                target: env.VITE_APP_API_URL,
+                rewrite: (path: string) =>
+                  path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""),
+              },
+            },
     },
     plugins: [
       vue(),
