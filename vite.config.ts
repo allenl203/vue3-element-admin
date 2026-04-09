@@ -38,19 +38,15 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       host: "0.0.0.0",
       port: +env.VITE_APP_PORT,
       open: true,
-      // Mock 模式下禁用 proxy，所有请求由 mock-dev-server 处理；
-      // 非 Mock 模式下代理到 VITE_APP_API_URL 后端
-      proxy:
-        env.VITE_MOCK_DEV_SERVER === "true"
-          ? undefined
-          : {
-              [env.VITE_APP_BASE_API]: {
-                changeOrigin: true,
-                target: env.VITE_APP_API_URL,
-                rewrite: (path: string) =>
-                  path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""),
-              },
-            },
+      proxy: {
+        [env.VITE_APP_BASE_API]: {
+          changeOrigin: true,
+          // Mock 模式下 proxy target 设为无效地址，未 mock 的请求会连接失败而非打到后端
+          // 非 Mock 模式下代理到 VITE_APP_API_URL
+          target: env.VITE_MOCK_DEV_SERVER === "true" ? "http://127.0.0.1:0" : env.VITE_APP_API_URL,
+          rewrite: (path: string) => path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""),
+        },
+      },
     },
     plugins: [
       vue(),
